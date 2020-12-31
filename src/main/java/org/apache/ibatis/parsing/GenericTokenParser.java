@@ -20,8 +20,17 @@ package org.apache.ibatis.parsing;
  */
 public class GenericTokenParser {
 
+  /**
+   * 占位符的开始字符
+   * */
   private final String openToken;
+  /**
+   * 占位符的结束字符
+   * */
   private final String closeToken;
+  /**
+   * 占位符内的表达式处理器
+   * */
   private final TokenHandler handler;
 
   public GenericTokenParser(String openToken, String closeToken, TokenHandler handler) {
@@ -31,25 +40,32 @@ public class GenericTokenParser {
   }
 
   public String parse(String text) {
+    //如果为空直接返回
     if (text == null || text.isEmpty()) {
       return "";
     }
     char[] src = text.toCharArray();
     int offset = 0;
-    // search open token
+    // 查找开始标记的位置
     int start = text.indexOf(openToken, offset);
+    //如果不存在则直接返回
     if (start == -1) {
       return text;
     }
+    //builder用来保存解析后的字符串
     final StringBuilder builder = new StringBuilder();
+    //expression用来保存占位符内的公式
     StringBuilder expression = null;
     while (start > -1) {
+      /*
+      * 如果开始字符前面是转义字符“\”，则去掉转义字符
+      * 比如\${abc，会拼接成${abc
+      * */
       if (start > 0 && src[start - 1] == '\\') {
-        // this open token is escaped. remove the backslash and continue.
         builder.append(src, offset, start - offset - 1).append(openToken);
         offset = start + openToken.length();
       } else {
-        // found open token. let's search close token.
+        //
         if (expression == null) {
           expression = new StringBuilder();
         } else {
@@ -79,6 +95,7 @@ public class GenericTokenParser {
           offset = end + closeToken.length();
         }
       }
+      //查找下一个开始字符
       start = text.indexOf(openToken, offset);
     }
     if (offset < src.length) {

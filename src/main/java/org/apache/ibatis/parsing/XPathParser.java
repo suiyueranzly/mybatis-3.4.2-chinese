@@ -58,7 +58,7 @@ public class XPathParser {
    * */
   private EntityResolver entityResolver;
   /**
-   * mybatis-config.xml中 <properties></>标签定义的键位对集合
+   * mybatis-config.xml中 <properties>标签定义的键位对集合
    * */
   private Properties variables;
   /**
@@ -154,6 +154,10 @@ public class XPathParser {
     return evalString(document, expression);
   }
 
+  /**
+   * 将表达式解析为字符串类型返回，
+   * 内部调用PropertyParser.parse()，该方法会处理占位符，默认值等
+   * */
   public String evalString(Object root, String expression) {
     String result = (String) evaluate(expression, root, XPathConstants.STRING);
     result = PropertyParser.parse(result, variables);
@@ -242,7 +246,7 @@ public class XPathParser {
   }
 
   private Document createDocument(InputSource inputSource) {
-    // 重要：此方法必须在commonConstructor之后调用
+    // 重要：调用此方法之前必须先调用commonConstructor完成初始化
     try {
       DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
       //设置是否验证

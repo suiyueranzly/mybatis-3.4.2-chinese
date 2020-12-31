@@ -18,6 +18,7 @@ package org.apache.ibatis.parsing;
 import static org.junit.Assert.assertEquals;
 
 import java.io.InputStream;
+import java.util.Properties;
 
 import org.apache.ibatis.io.Resources;
 import org.junit.Test;
@@ -41,6 +42,19 @@ public class XPathParserTest {
     XNode node = parser.evalNode("/employee/height");
     assertEquals("employee/height", node.getPath());
     assertEquals("employee[${id_var}]_height", node.getValueBasedIdentifier());
+  }
+
+  @Test
+  public void shouldTestXPathParserMethodsWithProperties() throws Exception {
+    Properties properties = new Properties();
+    String idVar = "test";
+    properties.setProperty("id_var", idVar);
+    properties.setProperty("org.apache.ibatis.parsing.PropertyParser.enable-default-value", "true");
+    String resource = "resources/nodelet_test.xml";
+    InputStream inputStream = Resources.getResourceAsStream(resource);
+    XPathParser parser = new XPathParser(inputStream, false, properties, null);
+    assertEquals(idVar + "defaultValue", parser.evalString("/employee/test/@id"));
+//    assertEquals("1", parser.evalString("/employee/test/@expression"));
   }
 
 }

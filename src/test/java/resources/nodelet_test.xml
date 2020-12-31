@@ -16,6 +16,7 @@
 
 -->
 <employee id="${id_var}">
+  <test id="${id_var}${username:defaultValue}" expression="${id_var!=null?1:-1}"/>
   <blah something="that"/>
   <first_name>Jim</first_name>
   <last_name>Smith</last_name>
