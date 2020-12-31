@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<inventory>
+    <car year="2000">
+        <name>blueCar</name>
+        <color>blue</color>
+        <price>14000</price>
+        <speed>120</speed>
+    </car>
+    <car year="1995">
+        <name>redCar</name>
+        <color>red</color>
+        <price>19000</price>
+        <speed>150</speed>
+    </car>
+    <car year="2005">
+        <name>blackCar</name>
+        <color>black</color>
+        <price>24000</price>
+        <speed>170</speed>
+    </car>
+</inventory>
