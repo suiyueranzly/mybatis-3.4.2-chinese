@@ -53,7 +53,7 @@ public class XPathParserTest {
     String resource = "resources/nodelet_test.xml";
     InputStream inputStream = Resources.getResourceAsStream(resource);
     XPathParser parser = new XPathParser(inputStream, false, properties, null);
-    assertEquals(idVar + "defaultValue", parser.evalString("/employee/test/@id"));
+    assertEquals("test" + idVar + "defaultValue", parser.evalString("/employee/test/@id"));
 //    assertEquals("1", parser.evalString("/employee/test/@expression"));
   }
 

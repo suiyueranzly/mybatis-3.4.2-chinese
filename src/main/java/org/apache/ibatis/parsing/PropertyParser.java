@@ -67,8 +67,17 @@ public class PropertyParser {
   }
 
   private static class VariableTokenHandler implements TokenHandler {
+    /**
+     * properties标签中配置的键值对
+     * */
     private final Properties variables;
+    /**
+     * 是否开启默认值功能
+     * */
     private final boolean enableDefaultValue;
+    /**
+     * 默认分隔符
+     * */
     private final String defaultValueSeparator;
 
     private VariableTokenHandler(Properties variables) {
@@ -85,21 +94,30 @@ public class PropertyParser {
     public String handleToken(String content) {
       if (variables != null) {
         String key = content;
+        //如果开启了默认值功能
         if (enableDefaultValue) {
+          //查找是否有分隔符
           final int separatorIndex = content.indexOf(defaultValueSeparator);
           String defaultValue = null;
           if (separatorIndex >= 0) {
+            /*
+            * 如果有分隔符，则分割key和后面的默认值，如  ${username:abc}
+            * 这里的key就是username，默认值就是abc
+            * */
             key = content.substring(0, separatorIndex);
             defaultValue = content.substring(separatorIndex + defaultValueSeparator.length());
           }
           if (defaultValue != null) {
+            //如果找到就返回，找不到就返回默认值
             return variables.getProperty(key, defaultValue);
           }
         }
+        //如果properties中配置的键值对中存在该key，则从中获取
         if (variables.containsKey(key)) {
           return variables.getProperty(key);
         }
       }
+      //如果properties没有配置键值对的话，这里就直接返回
       return "${" + content + "}";
     }
   }

@@ -65,37 +65,50 @@ public class GenericTokenParser {
         builder.append(src, offset, start - offset - 1).append(openToken);
         offset = start + openToken.length();
       } else {
-        //
+        // 重置expression对象
         if (expression == null) {
           expression = new StringBuilder();
         } else {
           expression.setLength(0);
         }
+        /*
+         * 首先拼接offset到开始字符之间的普通字符串（此时的offset为0）
+         * 如test${id_var}，则先将test拼接到结果中
+         * */
         builder.append(src, offset, start - offset);
+        //将offset更改为开始字符后面的的位置
         offset = start + openToken.length();
+        //从offset的位置开始查找结束标记的位置
         int end = text.indexOf(closeToken, offset);
+        //如果找到了结束标记
         while (end > -1) {
+          //处理结束标记的转移字符
           if (end > offset && src[end - 1] == '\\') {
-            // this close token is escaped. remove the backslash and continue.
             expression.append(src, offset, end - offset - 1).append(closeToken);
             offset = end + closeToken.length();
             end = text.indexOf(closeToken, offset);
           } else {
+            /*
+             * 将开始标记和结束标记之间的字符拼接到表达式中
+             * 如${abc}，这里会拼接abc
+             * */
             expression.append(src, offset, end - offset);
+            //重新计算offset
             offset = end + closeToken.length();
             break;
           }
         }
         if (end == -1) {
-          // close token was not found.
+          // 如果找不到关闭字符，则将开始字符后面的文本拼接起来
           builder.append(src, start, src.length - start);
           offset = src.length;
         } else {
+          //将占位符里面的表达式文本交给TokenHandler处理并拼接到结果中
           builder.append(handler.handleToken(expression.toString()));
           offset = end + closeToken.length();
         }
       }
-      //查找下一个开始字符
+      //再次开始查找
       start = text.indexOf(openToken, offset);
     }
     if (offset < src.length) {

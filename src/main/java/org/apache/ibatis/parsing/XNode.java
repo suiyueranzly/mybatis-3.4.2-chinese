@@ -31,11 +31,29 @@ import org.w3c.dom.NodeList;
  */
 public class XNode {
 
+  /**
+   * 节点对象
+   * */
   private Node node;
+  /**
+   * 节点的名称
+   * */
   private String name;
+  /**
+   * 节点内容
+   * */
   private String body;
+  /**
+   * 节点的属性集合
+   * */
   private Properties attributes;
+  /**
+   * properties标签中配置的键值对
+   * */
   private Properties variables;
+  /**
+   * xpathParser对象，标记该xnode对象由哪个解析器生成
+   * */
   private XPathParser xpathParser;
 
   public XNode(XPathParser xpathParser, Node node, Properties variables) {
@@ -43,7 +61,9 @@ public class XNode {
     this.node = node;
     this.name = node.getNodeName();
     this.variables = variables;
+    //解析该节点的属性
     this.attributes = parseAttributes(node);
+    //解析该结点的内容
     this.body = parseBody(node);
   }
 
@@ -349,7 +369,9 @@ public class XNode {
 
   private Properties parseAttributes(Node n) {
     Properties attributes = new Properties();
+    //调用org.w3c.dom.Node.getAttributes()方法获取该节点的属性
     NamedNodeMap attributeNodes = n.getAttributes();
+    //如果不为null，则调用PropertyParser对象一个个处理占位符后放入attributes集合中
     if (attributeNodes != null) {
       for (int i = 0; i < attributeNodes.getLength(); i++) {
         Node attribute = attributeNodes.item(i);
@@ -362,6 +384,7 @@ public class XNode {
 
   private String parseBody(Node node) {
     String data = getBodyData(node);
+    //如果不是text节点，则获取子节点的内容
     if (data == null) {
       NodeList children = node.getChildNodes();
       for (int i = 0; i < children.getLength(); i++) {
@@ -376,12 +399,16 @@ public class XNode {
   }
 
   private String getBodyData(Node child) {
+    //只处理text节点或CDATA节点
     if (child.getNodeType() == Node.CDATA_SECTION_NODE
         || child.getNodeType() == Node.TEXT_NODE) {
+      //调用org.w3c.dom.CharacterData.getData()方法获取节点内容
       String data = ((CharacterData) child).getData();
+      //调用PropertyParser处理占位符
       data = PropertyParser.parse(data, variables);
       return data;
     }
+    //如果不是text节点则直接返回null
     return null;
   }
 
