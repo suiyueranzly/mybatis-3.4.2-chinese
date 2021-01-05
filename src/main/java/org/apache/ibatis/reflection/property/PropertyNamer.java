@@ -29,14 +29,18 @@ public final class PropertyNamer {
   }
 
   public static String methodToProperty(String name) {
+    //如果是is开头，则从第二位开始截取
     if (name.startsWith("is")) {
       name = name.substring(2);
     } else if (name.startsWith("get") || name.startsWith("set")) {
+      //如果是get或者set开头，则从第三位开始截取
       name = name.substring(3);
     } else {
+      //都不是则抛出异常
       throw new ReflectionException("Error parsing property name '" + name + "'.  Didn't start with 'is', 'get' or 'set'.");
     }
 
+    //因为getName这种方法，截取出来的属性名首字母是大写的，所以要把第一位转换成小写
     if (name.length() == 1 || (name.length() > 1 && !Character.isUpperCase(name.charAt(1)))) {
       name = name.substring(0, 1).toLowerCase(Locale.ENGLISH) + name.substring(1);
     }
